@@ -11,7 +11,8 @@
     android:paddingRight="16dp"
     android:paddingBottom="16dp"
     android:scrollbarStyle="outsideOverlay"
-    tools:context=".LoginActivity">
+    tools:context=".LoginActivity"
+    android:background="@color/colorBackground">
 
     <!-- Login progress -->
     <LinearLayout
@@ -57,9 +58,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:text="@string/action_sign_in"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:background="@color/colorItem" />
 
             <Button
                 android:id="@+id/email_sign_up_button"
@@ -67,9 +70,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:text="@string/action_sign_up"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:background="@color/colorItem"/>
         </LinearLayout>
 
     </LinearLayout>

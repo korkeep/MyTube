@@ -2,6 +2,7 @@
     <string name="app_name">김성수</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
+    <string name="prompt_input">검색어를 입력하세요</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">로그인</string>
     <string name="action_sign_up">회원가입</string>

@@ -31,13 +31,16 @@
         <activity
             android:name=".MainActivity"
             android:theme="@style/YesTitle">
+            <!--
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@menu/search_item" />
+                android:resource="@menu/top_bar" />
+            -->
         </activity>
 
         <activity
             android:name=".RegisterActivity"
+            android:parentActivityName=".LoginActivity"
             android:theme="@style/NoTitle">
         </activity>
 

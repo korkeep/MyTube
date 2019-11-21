@@ -1,6 +1,7 @@
 package com.example.swonlinelectureapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -42,14 +43,11 @@ public class FragmentHome extends Fragment {
         InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         in.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
 
-        //정보를 가져올 수 있으면?
-        try{
-
-        }
-
-        //정보를 가져올 수 없으면?
-        catch(Exception e){
-
-        }
+        //EditText내에서 검색한 string 결과 Intent로 전달
+        String temp = searchBar.getText().toString();
+        Intent intent = new Intent(getActivity().getApplicationContext(), StartActivity.class);
+        intent.putExtra("search_item", temp);
+        searchBar.setText("");
+        startActivity(intent);
     }
 }

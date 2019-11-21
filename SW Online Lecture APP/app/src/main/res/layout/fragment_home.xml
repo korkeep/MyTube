@@ -17,7 +17,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -33,7 +35,9 @@
             android:hint="@string/prompt_input"
             android:background="@drawable/make_box"
             android:textColorHint="@color/colorItem"
-            android:textColor="@color/colorLetter"/>
+            android:textColor="@color/colorLetter"
+            android:imeOptions="actionSearch"
+            android:inputType="text"/>
 
     </LinearLayout>
 

@@ -1,8 +1,6 @@
 package com.example.swonlinelectureapp;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -21,6 +19,7 @@ public class StartActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
 
+        //Home에서 넘겨받은 String
         Intent intent = getIntent();
         String search_item = intent.getExtras().getString("search_item");
 

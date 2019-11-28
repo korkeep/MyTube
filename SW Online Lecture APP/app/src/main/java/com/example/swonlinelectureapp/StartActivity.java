@@ -123,11 +123,13 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
+    //Http 통신 프로토콜 이용 파싱 함수
     public JSONObject getUtube() {
+        //최대 10개까지 검색해옴(너무 많으면 API Key 사용한도 초과함)
         HttpGet httpGet = new HttpGet(
                 "https://www.googleapis.com/youtube/v3/search?"
-                        + "part=snippet&maxResults=20&q=" + search_item
-                        + "&key="+ serverKey); //검색 수행
+                        + "part=snippet&maxResults=10&q=" + search_item
+                        + "&key="+ serverKey);
         // part(snippet),  q(검색값) , key(서버키)
         HttpClient client = new DefaultHttpClient();
         HttpResponse response;
@@ -142,9 +144,12 @@ public class StartActivity extends AppCompatActivity {
                 stringBuilder.append((char) b);
             }
         } catch (ClientProtocolException e) {
+            //예외처리
         } catch (IOException e) {
+            //예외처리
         }
 
+        //JSon 형식의 Youtube API 파일 읽어오기
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject = new JSONObject(stringBuilder.toString());
@@ -156,7 +161,7 @@ public class StartActivity extends AppCompatActivity {
         return jsonObject;
     }
 
-    //파싱을 하면 여러가지 값을 얻을 수 있는데 필요한 값들을 세팅하셔서 사용하시면 됩니다.
+    //파싱 결과(Video ID, 제목, 썸네일, 날짜)
     private void paringJsonData(JSONObject jsonObject) throws JSONException {
         sdata.clear();
 
@@ -164,51 +169,47 @@ public class StartActivity extends AppCompatActivity {
 
         for (int i = 0; i < contacts.length(); i++) {
             JSONObject c = contacts.getJSONObject(i);
-            String vodid = c.getJSONObject("id").getString("videoId");  //유튜브 동영상 아이디 값입니다. 재생시 필요합니다.
-
-            String title = c.getJSONObject("snippet").getString("title"); //유튜브 제목을 받아옵니다
-            String changString = "";
+            String VideoID = c.getJSONObject("id").getString("videoId");
+            String title = c.getJSONObject("snippet").getString("title");
+            String changeString = "";
             try {
-                changString = new String(title.getBytes("8859_1"), "utf-8"); //한글이 깨져서 인코딩 해주었습니다
+                changeString = new String(title.getBytes("8859_1"), "utf-8");
             } catch (UnsupportedEncodingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
-            String date = c.getJSONObject("snippet").getString("publishedAt") //등록날짜
-                    .substring(0, 10);
             String imgUrl = c.getJSONObject("snippet").getJSONObject("thumbnails")
-                    .getJSONObject("default").getString("url");  //썸내일 이미지 URL값
+                    .getJSONObject("default").getString("url");
+            String date = c.getJSONObject("snippet").getString("publishedAt")
+                    .substring(0, 10);
 
-            sdata.add(new SearchData(vodid, changString, imgUrl, date));
+            sdata.add(new SearchData(VideoID, changeString, imgUrl, date));
         }
     }
 
-    String vodid = "";
-
+    //파싱 결과로 LIstView 구성
     public class StoreListAdapter extends ArrayAdapter<SearchData> {
         private ArrayList<SearchData> items;
         SearchData fInfo;
 
-        public StoreListAdapter(Context context, int textViewResourseId,
-                                ArrayList<SearchData> items) {
+        //ListView 세팅함수
+        public StoreListAdapter(Context context, int textViewResourseId, ArrayList<SearchData> items) {
             super(context, textViewResourseId, items);
             this.items = items;
         }
 
-        public View getView(int position, View convertView, ViewGroup parent) {// listview
+        //ListView 출력함수
+        public View getView(int position, View convertView, ViewGroup parent) {
 
-            // 출력
+            //convertView가 맞나??
             View v = convertView;
             fInfo = items.get(position);
-
             LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
             v = vi.inflate(R.layout.listview_start, null);
+
+            //썸네일 이미지
             ImageView img = (ImageView) v.findViewById(R.id.img);
-
             String url = fInfo.getUrl();
-
             String sUrl = "";
             String eUrl = "";
             sUrl = url.substring(0, url.lastIndexOf("/") + 1);
@@ -220,25 +221,26 @@ public class StartActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             String new_url = sUrl + eUrl;
+            DM.fetchDrawableOnThread(new_url, img);
 
-            DM.fetchDrawableOnThread(new_url, img);  //비동기 이미지 로더
-
+            //Video ID Intent 전달
+            //지금은 PlayActivity로 전달한 후 재생하지만, Video ID를 FragmentStore로 전달해야함
             v.setTag(position);
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int pos = (Integer) v.getTag();
-
-                    Intent intent = new Intent(StartActivity.this,
-                            PlayActivity.class);
+                    Intent intent = new Intent(StartActivity.this, PlayActivity.class);
                     intent.putExtra("id", items.get(pos).getVideoId());
-                    startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동합니다. 동영상 아이디를 넘겨줍니다..
+                    startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동. 동영상 아이디를 넘겨줌.
                 }
             });
 
+            //제목 설정
             ((TextView) v.findViewById(R.id.title)).setText(fInfo.getTitle());
-            ((TextView) v.findViewById(R.id.date)).setText(fInfo
-                    .getPublishedAt());
+
+            //날짜 설정
+            ((TextView) v.findViewById(R.id.date)).setText(fInfo.getPublishedAt());
 
             return v;
         }

@@ -37,8 +37,7 @@ public class PlayActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     }
 
     @Override
-    public void onInitializationSuccess(Provider provider,
-                                        YouTubePlayer player, boolean wasrestored) {
+    public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasrestored) {
         ytp = player;
         Intent gt =getIntent();
         ytp.loadVideo(gt.getStringExtra("id"));

@@ -6,8 +6,7 @@ public class SearchData {
     String url;
     String publishedAt;
 
-    public SearchData(String videoId, String title, String url,
-                      String publishedAt) {
+    public SearchData(String videoId, String title, String url, String publishedAt) {
         super();
         this.videoId = videoId;
         this.title = title;
@@ -15,6 +14,7 @@ public class SearchData {
         this.publishedAt = publishedAt;
     }
 
+    //Video ID
     public String getVideoId() {
         return videoId;
     }
@@ -23,14 +23,12 @@ public class SearchData {
         this.videoId = videoId;
     }
 
+    //제목
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
+    //URL
     public String getUrl() {
         return url;
     }
@@ -39,11 +37,8 @@ public class SearchData {
         this.url = url;
     }
 
+    //날짜
     public String getPublishedAt() {
         return publishedAt;
-    }
-
-    public void setPublishedAt(String publishedAt) {
-        this.publishedAt = publishedAt;
     }
 }

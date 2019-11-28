@@ -28,6 +28,7 @@
 
         <TextView
             android:id="@+id/date"
+            android:textColor="@color/colorLetter"
             android:layout_width="match_parent"
             android:layout_height="30dip"
             android:singleLine="true">
@@ -35,6 +36,7 @@
 
         <TextView
             android:id="@+id/title"
+            android:textColor="@color/colorLetter"
             android:layout_width="match_parent"
             android:layout_height="70dip">
         </TextView>

@@ -44,6 +44,10 @@
             android:name=".StartActivity"
             android:theme="@style/YesTitle"></activity>
 
+        <activity
+            android:name=".PlayActivity"
+            android:theme="@style/NoTitle"></activity>
+
     </application>
 
 

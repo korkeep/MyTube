@@ -252,14 +252,15 @@ public class StartActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
+                    // if 조건문에서 정확하게는 보관함 List Video ID와 비교해봐야
                     if(like.isChecked()) {
-                        //PlayList 추가 구현
+                        //PlayList 추가 구현하기
 
                         like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_gray));
                         Toast.makeText(StartActivity.this, "보관함에다 추가", Toast.LENGTH_SHORT).show();
                     }
                     else {
-                        //PlayList 삭제 구현
+                        //PlayList 삭제 구현하기
 
                         like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_dark));
                         Toast.makeText(StartActivity.this, "보관함에서 삭제", Toast.LENGTH_SHORT).show();

@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -23,6 +22,8 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -40,6 +41,7 @@ public class StartActivity extends AppCompatActivity {
     static DrawableManager DM = new DrawableManager();
     // String은 공백을 끝으로 인식하기 때문에 다른 대안 필요하다
     String search_item;
+
 
     AsyncTask<?, ?, ?> searchTask;
     ArrayList<SearchData> sdata = new ArrayList<SearchData>();
@@ -193,7 +195,6 @@ public class StartActivity extends AppCompatActivity {
     public class StoreListAdapter extends ArrayAdapter<SearchData> {
         private ArrayList<SearchData> items;
         SearchData fInfo;
-        ImageButton Like;
 
         //ListView 세팅함수
         public StoreListAdapter(Context context, int textViewResourseId, ArrayList<SearchData> items) {
@@ -246,12 +247,25 @@ public class StartActivity extends AppCompatActivity {
             ((TextView) v.findViewById(R.id.date)).setText(fInfo.getPublishedAt());
 
             //Like 버튼
-            /*Like.setOnClickListener(new View.OnClickListener() {
+            final ToggleButton like = (ToggleButton) v.findViewById(R.id.like);
+            like.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    //여기에 구현
+                public void onClick(View v) {
+                    // TODO Auto-generated method stub
+                    if(like.isChecked()) {
+                        //PlayList 추가 구현
+
+                        like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_gray));
+                        Toast.makeText(StartActivity.this, "보관함에다 추가", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        //PlayList 삭제 구현
+
+                        like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_dark));
+                        Toast.makeText(StartActivity.this, "보관함에서 삭제", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            });*/
+            });
 
             return v;
         }

@@ -11,14 +11,16 @@
         android:layout_weight="3"
         android:orientation="horizontal">
 
-        <ImageButton
+        <ToggleButton
             android:layout_marginLeft="4dp"
             android:layout_marginRight="16dp"
             android:layout_gravity="center"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:background="@color/colorBackground"
-            android:src="@drawable/like_states" />
+            android:textOn=""
+            android:textOff=""
+            android:id="@+id/like"
+            android:background="@drawable/like_dark"/>
         
         <ImageView
             android:id="@+id/img"

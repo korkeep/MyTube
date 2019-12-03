@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -39,6 +40,7 @@ public class StartActivity extends AppCompatActivity {
     static DrawableManager DM = new DrawableManager();
     // String은 공백을 끝으로 인식하기 때문에 다른 대안 필요하다
     String search_item;
+
     AsyncTask<?, ?, ?> searchTask;
     ArrayList<SearchData> sdata = new ArrayList<SearchData>();
     final String serverKey="AIzaSyBdARQznrjtHIflil6qtPdPdjMy2MdFWTU";
@@ -85,9 +87,9 @@ public class StartActivity extends AppCompatActivity {
 
     //뒤로가기 동작
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch(id){
+        switch (id) {
             case android.R.id.home:
                 //뒤로가기 동작
                 finish();
@@ -191,6 +193,7 @@ public class StartActivity extends AppCompatActivity {
     public class StoreListAdapter extends ArrayAdapter<SearchData> {
         private ArrayList<SearchData> items;
         SearchData fInfo;
+        ImageButton Like;
 
         //ListView 세팅함수
         public StoreListAdapter(Context context, int textViewResourseId, ArrayList<SearchData> items) {
@@ -241,6 +244,14 @@ public class StartActivity extends AppCompatActivity {
 
             //날짜 설정
             ((TextView) v.findViewById(R.id.date)).setText(fInfo.getPublishedAt());
+
+            //Like 버튼
+            /*Like.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //여기에 구현
+                }
+            });*/
 
             return v;
         }

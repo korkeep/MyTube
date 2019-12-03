@@ -31,8 +31,7 @@ public class PlayActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     }
 
     @Override
-    public void onInitializationFailure(Provider arg0,
-                                        YouTubeInitializationResult arg1) {
+    public void onInitializationFailure(Provider arg0, YouTubeInitializationResult arg1) {
         Toast.makeText(this, "Initialization Fail", Toast.LENGTH_LONG).show();
     }
 

@@ -20,8 +20,8 @@
             android:textOn=""
             android:textOff=""
             android:id="@+id/like"
-            android:background="@drawable/like_dark"/>
-        
+            android:background="@drawable/like_gray"/>
+
         <ImageView
             android:id="@+id/img"
             android:layout_width="match_parent"

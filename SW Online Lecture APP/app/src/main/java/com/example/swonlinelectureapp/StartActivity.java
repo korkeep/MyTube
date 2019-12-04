@@ -224,27 +224,30 @@ public class StartActivity extends AppCompatActivity {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            String new_url = sUrl + eUrl;
+            final String new_url = sUrl + eUrl;
             DM.fetchDrawableOnThread(new_url, img);
 
             //Video ID Intent 전달
-            //지금은 PlayActivity로 전달한 후 재생하지만, Video ID를 FragmentStore로 전달해야함
             v.setTag(position);
+            final String VideoID = items.get((Integer) v.getTag()).getVideoId();
+            //썸네일, 제목 클릭 시 동영상 실행
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int pos = (Integer) v.getTag();
                     Intent intent = new Intent(StartActivity.this, PlayActivity.class);
-                    intent.putExtra("id", items.get(pos).getVideoId());
+                    intent.putExtra("id", VideoID);
                     startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동. 동영상 아이디를 넘겨줌.
                 }
             });
 
             //제목 설정
-            ((TextView) v.findViewById(R.id.title)).setText(fInfo.getTitle());
+            final String Title = fInfo.getTitle();
+            ((TextView) v.findViewById(R.id.title)).setText(Title);
 
             //날짜 설정
-            ((TextView) v.findViewById(R.id.date)).setText(fInfo.getPublishedAt());
+            final String Date = fInfo.getPublishedAt();
+            ((TextView) v.findViewById(R.id.date)).setText(Date);
 
             //Like 버튼
             final ToggleButton like = (ToggleButton) v.findViewById(R.id.like);
@@ -255,15 +258,18 @@ public class StartActivity extends AppCompatActivity {
                     // if 조건문에서 정확하게는 보관함 List Video ID와 비교해봐야
                     if(like.isChecked()) {
                         //PlayList 추가 구현하기
+                        //txt 파일 Open하고, 입력하기
+                        //temp를 tab으로 구분해서 저장해두자
+                        //String temp = searchBar.getText().toString();
+                        //Intent intent = new Intent(getActivity().getApplicationContext(), SQLiteActivity.class);
+                        //intent.putExtra("search_item", temp);
+                        //SQLiteActivity(intent);
+
+                        //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 \t 기준으로 저장된다
+                        //String temp = new_url + '\t' + Date + '\t' + Title + '\t' +  VideoID;
 
                         like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_gray));
-                        Toast.makeText(StartActivity.this, "보관함에다 추가", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        //PlayList 삭제 구현하기
-
-                        like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_dark));
-                        Toast.makeText(StartActivity.this, "보관함에서 삭제", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(StartActivity.this, "보관함에 추가", Toast.LENGTH_SHORT).show();
                     }
                 }
             });

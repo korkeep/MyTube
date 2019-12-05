@@ -1,13 +1,21 @@
 package com.example.swonlinelectureapp;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,15 +45,14 @@ import org.json.JSONObject;
 
 public class StartActivity extends AppCompatActivity {
 
-    //검색 기능 구현에 필요한 Parameter
+    //썸네일에 필요한 Parameter
     static DrawableManager DM = new DrawableManager();
     // String은 공백을 끝으로 인식하기 때문에 다른 대안 필요하다
     String search_item;
 
-
     AsyncTask<?, ?, ?> searchTask;
     ArrayList<SearchData> sdata = new ArrayList<SearchData>();
-    final String serverKey="AIzaSyBdARQznrjtHIflil6qtPdPdjMy2MdFWTU";
+    final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +108,7 @@ public class StartActivity extends AppCompatActivity {
     }
 
     //검색 기능 구현
+    @SuppressLint("StaticFieldLeak")
     private class searchTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
@@ -234,7 +242,6 @@ public class StartActivity extends AppCompatActivity {
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int pos = (Integer) v.getTag();
                     Intent intent = new Intent(StartActivity.this, PlayActivity.class);
                     intent.putExtra("id", VideoID);
                     startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동. 동영상 아이디를 넘겨줌.
@@ -257,17 +264,81 @@ public class StartActivity extends AppCompatActivity {
                     // TODO Auto-generated method stub
                     // if 조건문에서 정확하게는 보관함 List Video ID와 비교해봐야
                     if(like.isChecked()) {
-                        //PlayList 추가 구현하기
-                        //txt 파일 Open하고, 입력하기
-                        //temp를 tab으로 구분해서 저장해두자
-                        //String temp = searchBar.getText().toString();
-                        //Intent intent = new Intent(getActivity().getApplicationContext(), SQLiteActivity.class);
-                        //intent.putExtra("search_item", temp);
-                        //SQLiteActivity(intent);
 
-                        //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 \t 기준으로 저장된다
-                        //String temp = new_url + '\t' + Date + '\t' + Title + '\t' +  VideoID;
+                        //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 \n으로 구분하여 저장된다
+                        String temp = new_url + "\t" + Date + "\t" + Title + "\t" +  VideoID;
 
+                        //테스트 부분
+                        TextView t1 = findViewById(R.id.t1);
+                        TextView t2 = findViewById(R.id.t2);
+                        TextView t3 = findViewById(R.id.t3);
+                        TextView t4 = findViewById(R.id.t4);
+                        TextView t5 = findViewById(R.id.t5);
+                        TextView t6 = findViewById(R.id.t6);
+                        t1.setText(temp); //통과!!
+                        t2.setText(getFilesDir().toString()); //통과!!
+
+                        File file = new File(getFilesDir(), "myTubeData.txt");
+                        FileWriter fw = null;
+                        BufferedWriter buf = null;
+
+                        //OnClick 될 때마다 덮어쓴다. 보완 필요
+                        //myTubeData.txt 파일 작성
+                        try{
+                            fw = new FileWriter(file);
+                            buf = new BufferedWriter(fw);
+                            buf.append(temp); //쓰고
+                            buf.newLine(); //end line
+                            buf.flush(); //비운다
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                        try {
+                            if (buf != null) {
+                                buf.close();
+                            }
+                            if (fw != null) {
+                                fw.close();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        //테스트 부분2 -> 통과!!
+                        FileReader fr = null;
+                        BufferedReader bufR = null;
+                        String line;
+                        String[] subStr;
+                        //myTubeData.txt 파일 읽어오기
+                        if(file.exists()){
+                            try{
+                                line = null;
+                                fr = new FileReader(file);
+                                bufR = new BufferedReader(fr);
+
+                                while((line = bufR.readLine()) != null){
+                                    subStr = null;
+                                    subStr = line.split("\t");
+
+                                    for(int i=0; i<subStr.length; i++){
+                                        subStr[i]=subStr[i].trim();
+                                    }
+
+                                    //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 tab로 구분하여 저장된다
+                                    //테스트용
+                                    t3.setText(subStr[0]);
+                                    t4.setText(subStr[1]);
+                                    t5.setText(subStr[2]);
+                                    t6.setText(subStr[3]);
+                                }
+                                bufR.close();
+                                fr.close();
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+
+                        //Like 클릭시 하트 채워짐, 토스트메시지
                         like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_gray));
                         Toast.makeText(StartActivity.this, "보관함에 추가", Toast.LENGTH_SHORT).show();
                     }

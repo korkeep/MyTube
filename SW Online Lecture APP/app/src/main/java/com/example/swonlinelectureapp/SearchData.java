@@ -28,6 +28,10 @@ public class SearchData {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     //URL
     public String getUrl() {
         return url;
@@ -40,5 +44,9 @@ public class SearchData {
     //날짜
     public String getPublishedAt() {
         return publishedAt;
+    }
+
+    public void setPublishedAt(String publishedAt) {
+        this.publishedAt = publishedAt;
     }
 }

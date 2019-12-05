@@ -21,45 +21,6 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/t1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="t1"
-            android:textSize="20dp" />
-
-        <TextView
-            android:id="@+id/t2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="t2"
-            android:textSize="20dp" />
-
-        <TextView
-            android:id="@+id/t3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="t3"
-            android:textSize="20dp" />
-        <TextView
-            android:id="@+id/t4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="t4"
-            android:textSize="20dp" />
-        <TextView
-            android:id="@+id/t5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="t5"
-            android:textSize="20dp" />
-        <TextView
-            android:id="@+id/t6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="t6"
-            android:textSize="20dp" />
-
         <ListView
             android:layout_height="match_parent"
             android:layout_width="fill_parent"
@@ -68,46 +29,5 @@
 
     </LinearLayout>
 
+
 </ScrollView>
-
-<!--
-<LinearLayout
-android:orientation="vertical"
-android:layout_height="match_parent"
-android:layout_width="match_parent"
-xmlns:tools="http://schemas.android.com/tools"
-xmlns:android="http://schemas.android.com/apk/res/android">
-
-<LinearLayout
-android:orientation="horizontal"
-android:layout_height="50dip"
-android:layout_width="match_parent">
-
-<EditText
-android:layout_height="50dip"
-android:layout_width="200dip"
-android:singleLine="true"
-android:imeOptions="actionGo"
-android:hint="검색어를 입력하세요"
-android:layout_alignParentRight="true"
-android:layout_alignParentLeft="true"
-android:id="@+id/eturl"> </EditText>
-
-<Button
-android:layout_height="50dip"
-android:layout_width="50dip"
-android:id="@+id/search"
-android:textColor="#ffffff"
-android:text="검색"
-android:gravity="center"
-android:background="#000000"
-android:layout_marginLeft="10dip"/>
-
-</LinearLayout>
-
-<ListView
-android:layout_height="500dip"
-android:layout_width="fill_parent"
-android:id="@+id/searchlist"> </ListView>
-
-</LinearLayout> -->

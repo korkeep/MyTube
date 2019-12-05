@@ -20,6 +20,7 @@ public class PlayActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     private YouTubePlayerView ytpv;
     private YouTubePlayer ytp;
     final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
+    //final String serverKey="AIzaSyBdARQznrjtHIflil6qtPdPdjMy2MdFWTU";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +28,11 @@ public class PlayActivity extends YouTubeBaseActivity implements YouTubePlayer.O
         setContentView(R.layout.activity_play);
         ytpv = (YouTubePlayerView) findViewById(R.id.youtubeplayer);
         ytpv.initialize(serverKey, this);
-
     }
 
     @Override
     public void onInitializationFailure(Provider arg0, YouTubeInitializationResult arg1) {
-        Toast.makeText(this, "Initialization Fail", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Error Detected", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -40,6 +40,13 @@ public class PlayActivity extends YouTubeBaseActivity implements YouTubePlayer.O
         ytp = player;
         Intent gt =getIntent();
         ytp.loadVideo(gt.getStringExtra("id"));
+    }
+
+    //뒤로가기 버튼 눌렀을 때
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(this, "보관함으로 이동합니다", Toast.LENGTH_SHORT).show();
+        super.onBackPressed();
     }
 
 }

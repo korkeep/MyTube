@@ -53,6 +53,7 @@ public class StartActivity extends AppCompatActivity {
     AsyncTask<?, ?, ?> searchTask;
     ArrayList<SearchData> sdata = new ArrayList<SearchData>();
     final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
+    //final String serverKey="AIzaSyBdARQznrjtHIflil6qtPdPdjMy2MdFWTU";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,6 +200,10 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
+
+    //만약 검색 결과에서, 보관함에 동일한 Video ID가 존재한다면?? 요때 Like 색깔 맞춰주기
+
+
     //파싱 결과로 LIstView 구성
     public class StoreListAdapter extends ArrayAdapter<SearchData> {
         private ArrayList<SearchData> items;
@@ -235,18 +240,19 @@ public class StartActivity extends AppCompatActivity {
             final String new_url = sUrl + eUrl;
             DM.fetchDrawableOnThread(new_url, img);
 
-            //Video ID Intent 전달
+            //Video ID 설정
             v.setTag(position);
             final String VideoID = items.get((Integer) v.getTag()).getVideoId();
+
             //썸네일, 제목 클릭 시 동영상 실행
-            v.setOnClickListener(new View.OnClickListener() {
+            /*v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(StartActivity.this, PlayActivity.class);
                     intent.putExtra("id", VideoID);
                     startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동. 동영상 아이디를 넘겨줌.
                 }
-            });
+            });*/
 
             //제목 설정
             final String Title = fInfo.getTitle();
@@ -265,27 +271,17 @@ public class StartActivity extends AppCompatActivity {
                     // if 조건문에서 정확하게는 보관함 List Video ID와 비교해봐야
                     if(like.isChecked()) {
 
-                        //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 \n으로 구분하여 저장된다
+                        //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 \t으로 구분하여 저장된다
                         String temp = new_url + "\t" + Date + "\t" + Title + "\t" +  VideoID;
-
-                        //테스트 부분
-                        TextView t1 = findViewById(R.id.t1);
-                        TextView t2 = findViewById(R.id.t2);
-                        TextView t3 = findViewById(R.id.t3);
-                        TextView t4 = findViewById(R.id.t4);
-                        TextView t5 = findViewById(R.id.t5);
-                        TextView t6 = findViewById(R.id.t6);
-                        t1.setText(temp); //통과!!
-                        t2.setText(getFilesDir().toString()); //통과!!
 
                         File file = new File(getFilesDir(), "myTubeData.txt");
                         FileWriter fw = null;
                         BufferedWriter buf = null;
 
-                        //OnClick 될 때마다 덮어쓴다. 보완 필요
-                        //myTubeData.txt 파일 작성
+                        //myTubeData.txt 에 동영상 정보 추가
                         try{
-                            fw = new FileWriter(file);
+                            fw = new FileWriter(file, true); //기존 Data 추가쓰기
+                            //fw = new FileWriter(file); //기존 Data 덮어쓰기
                             buf = new BufferedWriter(fw);
                             buf.append(temp); //쓰고
                             buf.newLine(); //end line
@@ -304,38 +300,48 @@ public class StartActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-                        //테스트 부분2 -> 통과!!
-                        FileReader fr = null;
-                        BufferedReader bufR = null;
-                        String line;
-                        String[] subStr;
-                        //myTubeData.txt 파일 읽어오기
-                        if(file.exists()){
-                            try{
-                                line = null;
-                                fr = new FileReader(file);
-                                bufR = new BufferedReader(fr);
+                        //Like 클릭시 하트 채워짐, 토스트메시지
+                        like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_gray));
+                        Toast.makeText(StartActivity.this, "보관함에 추가", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
 
-                                while((line = bufR.readLine()) != null){
-                                    subStr = null;
-                                    subStr = line.split("\t");
+            //썸네일, 제목 클릭 시 Like 버튼 활성화
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO Auto-generated method stub
+                    // '!' 이 조건절에 붙었음
+                    if(!like.isChecked()) {
 
-                                    for(int i=0; i<subStr.length; i++){
-                                        subStr[i]=subStr[i].trim();
-                                    }
+                        //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 \t으로 구분하여 저장된다
+                        String temp = new_url + "\t" + Date + "\t" + Title + "\t" +  VideoID;
 
-                                    //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 tab로 구분하여 저장된다
-                                    //테스트용
-                                    t3.setText(subStr[0]);
-                                    t4.setText(subStr[1]);
-                                    t5.setText(subStr[2]);
-                                    t6.setText(subStr[3]);
-                                }
-                                bufR.close();
-                                fr.close();
-                            }catch (Exception e){
-                                e.printStackTrace();
+                        File file = new File(getFilesDir(), "myTubeData.txt");
+                        FileWriter fw = null;
+                        BufferedWriter buf = null;
+
+                        //myTubeData.txt 에 동영상 정보 추가
+                        try{
+                            fw = new FileWriter(file, true); //기존 Data 추가쓰기
+                            //fw = new FileWriter(file); //기존 Data 덮어쓰기
+                            buf = new BufferedWriter(fw);
+                            buf.append(temp); //쓰고
+                            buf.newLine(); //end line
+                            buf.flush(); //비운다
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                        try {
+                            if (buf != null) {
+                                buf.close();
                             }
+                            if (fw != null) {
+                                fw.close();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
 
                         //Like 클릭시 하트 채워짐, 토스트메시지

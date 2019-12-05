@@ -36,14 +36,6 @@ import java.util.ArrayList;
 
 public class FragmentStore extends Fragment {
 
-    //테스트용
-    TextView t1;
-    TextView t2;
-    TextView t3;
-    TextView t4;
-    TextView t5;
-    TextView t6;
-
     private Context context;
     private ListView playlist;
     //검색 기능 구현에 필요한 Parameter
@@ -56,14 +48,6 @@ public class FragmentStore extends Fragment {
         context = container.getContext();
         playlist = (ListView) v.findViewById(R.id.playlist);
         printTask = new printTask().execute();
-
-        //테스트용
-        t1 = v.findViewById(R.id.t1);
-        t2 = v.findViewById(R.id.t2);
-        t3 = v.findViewById(R.id.t3);
-        t4 = v.findViewById(R.id.t4);
-        t5 = v.findViewById(R.id.t5);
-        t6 = v.findViewById(R.id.t6);
 
         return v;
     }
@@ -78,7 +62,8 @@ public class FragmentStore extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            t1.setText(context.getFilesDir().toString());
+            //리스트 터치후, 재생에서 뒤로가기 하면 리스트 하나 더 중복해서 보이는 것 해결...(.txt 파일은 문제없음)
+            pdata.clear();
 
             File file = new File(context.getFilesDir(), "myTubeData.txt");
             FileReader fr = null;
@@ -95,9 +80,6 @@ public class FragmentStore extends Fragment {
 
                     while((line = buf.readLine()) != null){
 
-                        //테스트용
-                        t2.setText(line);
-
                         subStr = null;
                         subStr = line.split("\t");
 
@@ -105,17 +87,10 @@ public class FragmentStore extends Fragment {
                             subStr[i]=subStr[i].trim();
                         }
 
-                        //여기서 먼가 문제가 생긴다??
                         //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 tab로 구분하여 저장된다
                         //pdata에 저장
                         SearchData temp = new SearchData(subStr[3], subStr[2], subStr[0], subStr[1]);
                         pdata.add(temp);
-
-                        //테스트용
-                        t3.setText(temp.getUrl());
-                        t4.setText(temp.getPublishedAt());
-                        t5.setText(temp.getTitle());
-                        t6.setText(temp.getVideoId());
                     }
                     buf.close();
                     fr.close();

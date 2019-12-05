@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    //뒤로가기, 홈으로 이동 동작
+    //뒤로가기메뉴, 홈으로 이동 동작
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();

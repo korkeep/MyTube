@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,12 @@ public class FragmentStore extends Fragment {
         printTask = new printTask().execute();
 
         return v;
+    }
+
+    //Fragment 업데이트
+    private void refresh(){
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.detach(this).attach(this).commit();
     }
 
     //출력 기능 구현
@@ -186,7 +193,6 @@ public class FragmentStore extends Fragment {
                                 fr = new FileReader(file);
                                 bufR = new BufferedReader(fr);
 
-                                //요 부분에서 문제 생긴다!!
                                 while((line = bufR.readLine()) != null){
                                     if(temp.equals(line)){ continue; }
                                     dummy.append(line);
@@ -230,6 +236,9 @@ public class FragmentStore extends Fragment {
                         //Like 클릭시 하트 비워짐, 토스트메시지
                         like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_dark));
                         Toast.makeText(context, "보관함에서 삭제", Toast.LENGTH_SHORT).show();
+
+                        //해당 Fragment 다시 load, UI가 예쁘진 않다. 보완 필요.
+                        refresh();
                     }
                 }
             });

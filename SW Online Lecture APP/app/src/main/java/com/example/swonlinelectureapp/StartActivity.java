@@ -324,8 +324,8 @@ public class StartActivity extends AppCompatActivity {
 
                         //myTubeData.txt 에 동영상 정보 추가
                         try{
-                            //fw = new FileWriter(file, true); //기존 Data 추가쓰기
-                            fw = new FileWriter(file); //기존 Data 덮어쓰기
+                            fw = new FileWriter(file, true); //기존 Data 추가쓰기
+                            //fw = new FileWriter(file); //기존 Data 덮어쓰기
                             buf = new BufferedWriter(fw);
                             buf.append(temp); //쓰고
                             buf.newLine(); //end line

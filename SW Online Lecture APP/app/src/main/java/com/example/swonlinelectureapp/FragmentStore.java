@@ -168,18 +168,64 @@ public class FragmentStore extends Fragment {
 
                         //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 tab로 구분하여 저장된다
                         String temp = url + '\t' + Date + '\t' + Title + '\t' +  VideoID;
+                        String line;
+                        StringBuffer dummy;
 
-                        //myTubeData.txt 파일 삭제 기능 구현(읽기, 쓰기 모두)
-                        /*try{
-                            BufferedWriter buf = new BufferedWriter(new FileWriter(saveFile + "/myTubeData.txt", true));
-                            buf.append(temp); //쓰고
-                            buf.newLine(); //end line
-                            buf.close(); //닫는다
-                        }catch(FileNotFoundException e){
-                            e.printStackTrace();
-                        }catch(IOException e){
-                            e.printStackTrace();
-                        }*/
+                        //myTubeData.txt 파일 삭제 기능 구현(읽어오고, 쓰기에서 삭제해야)
+                        File file = new File(context.getFilesDir(), "myTubeData.txt");
+                        FileWriter fw = null;
+                        FileReader fr = null;
+                        BufferedWriter bufW = null;
+                        BufferedReader bufR = null;
+
+                        if(file.exists()){
+                            try{
+                                line = null;
+                                dummy = new StringBuffer();
+
+                                fr = new FileReader(file);
+                                bufR = new BufferedReader(fr);
+
+                                //요 부분에서 문제 생긴다!!
+                                while((line = bufR.readLine()) != null){
+                                    if(temp.equals(line)){ continue; }
+                                    dummy.append(line);
+                                    dummy.append("\n");
+                                }
+
+                                //dummy 덮어쓰기
+                                try{
+                                    //fw = new FileWriter(file, true); //기존 Data 추가쓰기
+                                    fw = new FileWriter(file); //기존 Data 덮어쓰기
+                                    bufW = new BufferedWriter(fw);
+                                    bufW.append(dummy.toString()); //쓰고
+                                    bufW.flush(); //비운다
+                                }catch(Exception e){
+                                    e.printStackTrace();
+                                }
+
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+
+                            //file close 해주는 코드
+                            try {
+                                if (bufW != null) {
+                                    bufW.close();
+                                }
+                                if (bufR != null) {
+                                    bufR.close();
+                                }
+                                if (fw != null) {
+                                    fw.close();
+                                }
+                                if (fr != null) {
+                                    fr.close();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
 
                         //Like 클릭시 하트 비워짐, 토스트메시지
                         like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_dark));

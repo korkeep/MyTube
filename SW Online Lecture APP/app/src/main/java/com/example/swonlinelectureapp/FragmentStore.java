@@ -3,6 +3,8 @@ package com.example.swonlinelectureapp;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,9 +15,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -26,21 +31,46 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FragmentStore extends Fragment {
 
     private Context context;
     private ListView playlist;
+    private String select = "";
+
     //검색 기능 구현에 필요한 Parameter
     static DrawableManager DM = new DrawableManager();
     ArrayList<SearchData> pdata = new ArrayList<SearchData>();
     AsyncTask<?, ?, ?> printTask;
 
+
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_store, container, false);
         context = container.getContext();
-        playlist = (ListView) v.findViewById(R.id.playlist);
-        printTask = new printTask().execute();
+        playlist = (ListView)v.findViewById(R.id.playlist);
+
+        //Spinner 관련
+        Spinner spinner = (Spinner)v.findViewById(R.id.storeOption);
+        //spinner.setSelection(0, true);
+        //View spinner_view = spinner.getSelectedView();
+        //((TextView)spinner_view).setTextColor(Color.WHITE);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @SuppressLint("ResourceAsColor")
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (((TextView) adapterView.getChildAt(0)) != null) {
+                    Log.v("Spinner", String.valueOf(adapterView.getChildAt(0)));
+                    ((TextView) adapterView.getChildAt(0)).setTextColor(Color.WHITE);
+                }
+                select = (String) adapterView.getItemAtPosition(i);
+                printTask = new printTask().execute();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                refresh();
+            }
+        });
 
         return v;
     }
@@ -62,10 +92,15 @@ public class FragmentStore extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             pdata.clear();
+
+            //DB 관련
+            String result = "";
             final DBHelper dbHelper = new DBHelper(getActivity(), "Video_Data.db", null, 1);
 
             //제목 순, 날짜 순, 추가 순 정렬
-            String result = dbHelper.getResult_title();
+            if(select.equals("날짜순")) result = dbHelper.getResult_publishedAt();
+            else if(select.equals("추가순")) result = dbHelper.getResult_likeAt();
+            else result = dbHelper.getResult_title();
 
             //DB 읽어오기
             if(!result.equals("")){

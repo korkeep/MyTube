@@ -25,16 +25,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
-            android:theme="@style/NoTitle"></activity>
-        <activity
             android:name=".MainActivity"
             android:theme="@style/YesTitle"></activity>
-        <activity
-            android:name=".RegisterActivity"
-            android:parentActivityName=".LoginActivity"
-            android:theme="@style/NoTitle"></activity>
-
         <activity
             android:name=".StartActivity"
             android:theme="@style/YesTitle"></activity>

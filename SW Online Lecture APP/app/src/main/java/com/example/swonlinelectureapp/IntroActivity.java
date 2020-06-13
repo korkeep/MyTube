@@ -17,7 +17,8 @@ public class IntroActivity extends Activity{
         }
 
         // next Activity 기재.
-        startActivity(new Intent(this,LoginActivity.class));
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
         finish();
     }
 }

@@ -6,10 +6,10 @@
         android:title="홈" />
     <item
         android:id="@+id/recommendItem"
-        android:icon="@drawable/msg"
-        android:title="추천" />
+        android:icon="@drawable/store"
+        android:title="옵션" />
     <item
         android:id="@+id/storeItem"
-        android:icon="@drawable/store"
+        android:icon="@drawable/folder"
         android:title="보관함" />
 </menu>

@@ -304,6 +304,35 @@ public class StartActivity extends AppCompatActivity {
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // DB에 레코드가 존재한다면 like를 체크 상태로 전환
+                    if(dbHelper.getResult_videoId(VideoID)) like.setChecked(true);
+                    else like.setChecked(false);
+
+                    // 보관함에 추가
+                    if(!like.isChecked()) {
+                        //VideoDate 설정
+                        @SuppressLint("SimpleDateFormat") SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        java.util.Date VideoDate = null;
+                        try {
+                            VideoDate = new java.sql.Date(transFormat.parse(Date).getTime());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        //LikeDate 설정
+                        long now = System.currentTimeMillis();
+                        java.sql.Date LikeDate = new Date(now);
+
+                        // 보관함에 추가
+                        dbHelper.insert(VideoID, Title, new_url, VideoDate, LikeDate);
+
+                        //Like 클릭시 하트 채워짐, 토스트메시지
+                        like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_gray));
+                        Toast.makeText(StartActivity.this, "보관함에 추가", Toast.LENGTH_SHORT).show();
+                    }
+
+                    // 재생 횟수 1 증가
+                    dbHelper.update_played(VideoID);
+
                     Intent intent = new Intent(StartActivity.this, PlayActivity.class);
                     intent.putExtra("id", VideoID);
                     startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동. 동영상 아이디를 넘겨줌.

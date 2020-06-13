@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,47 +61,29 @@ public class FragmentStore extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            //리스트 터치후, 재생에서 뒤로가기 하면 리스트 하나 더 중복해서 보이는 것 해결...(.txt 파일은 문제없음)
             pdata.clear();
+            final DBHelper dbHelper = new DBHelper(getActivity(), "Video_Data.db", null, 1);
 
-            File file = new File(context.getFilesDir(), "myTubeData.txt");
-            FileReader fr = null;
-            BufferedReader buf = null;
-            String line;
-            String[] subStr;
+            //제목 순, 날짜 순, 추가 순 정렬
+            String result = dbHelper.getResult_title();
 
-            //myTubeData.txt 파일 읽어오기
-            if(file.exists()){
-                try{
-                    line = null;
-                    fr = new FileReader(file);
-                    buf = new BufferedReader(fr);
+            //DB 읽어오기
+            if(!result.equals("")){
+                String[] line = result.split("\n");
+                String[] subStr;
+                SearchData temp;
 
-                    while((line = buf.readLine()) != null){
-
-                        subStr = null;
-                        subStr = line.split("\t");
-
-                        for(int i=0; i<subStr.length; i++){
-                            subStr[i]=subStr[i].trim();
-                        }
-
-                        //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 tab로 구분하여 저장된다
-                        //pdata에 저장
-                        SearchData temp = new SearchData(subStr[3], subStr[2], subStr[0], subStr[1]);
-                        pdata.add(temp);
-                    }
-                    buf.close();
-                    fr.close();
-
-                }catch (Exception e){
-                    e.printStackTrace();
+                for(int i=0; i<line.length;i++) {
+                    subStr = line[i].split("\t");
+                    temp = new SearchData(subStr[0], subStr[1], subStr[2], subStr[3]);
+                    Log.v("View Temp", subStr[0] + ' ' + subStr[1] + ' ' + subStr[2] + ' ' + subStr[3]);
+                    pdata.add(temp);
                 }
             }
             return null;
         }
 
-        //.txt에서 읽어온 유튜브 데이터를 이용해서 리스트를 만들어줍니다.
+        //DB에서 읽어온 데이터를 이용해 리스트 만들기
         @Override
         protected void onPostExecute(Void result) {
             FragmentStore.StoreListAdapter mAdapter = new StoreListAdapter(context, R.layout.listview_play, pdata);
@@ -114,6 +97,9 @@ public class FragmentStore extends Fragment {
     public class StoreListAdapter extends ArrayAdapter<SearchData> {
         private ArrayList<SearchData> items;
         SearchData fInfo;
+
+        //DB 관련
+        final DBHelper dbHelper = new DBHelper(getActivity(), "Video_Data.db", null, 1);
 
         //ListView 세팅함수
         public StoreListAdapter(Context context, int textViewResourseId, ArrayList<SearchData> items) {
@@ -137,16 +123,6 @@ public class FragmentStore extends Fragment {
             //Video ID Intent 전달
             final String VideoID = fInfo.getVideoId();
 
-            //썸네일, 제목 클릭 시 동영상 실행
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), PlayActivity.class);
-                    intent.putExtra("id", VideoID);
-                    startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동. 동영상 아이디를 넘겨줌.
-                }
-            });
-
             //제목 설정
             final String Title = fInfo.getTitle();
             ((TextView) v.findViewById(R.id.title)).setText(Title);
@@ -155,85 +131,41 @@ public class FragmentStore extends Fragment {
             final String Date = fInfo.getPublishedAt();
             ((TextView) v.findViewById(R.id.date)).setText(Date);
 
-            //Like 버튼
+            //like 버튼 클릭 시 like 버튼 비활성화
             final ToggleButton like = (ToggleButton) v.findViewById(R.id.like);
             like.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    // if 조건문에서 정확하게는 보관함 List Video ID와 비교해봐야
+                    // DB에 레코드가 존재한다면 like를 체크 상태로 전환
+                    if(dbHelper.getResult_videoId(VideoID)) like.setChecked(true);
+                    else like.setChecked(false);
+
+                    //DB에서 삭제
                     if(like.isChecked()) {
-
-                        //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 tab로 구분하여 저장된다
-                        String temp = url + '\t' + Date + '\t' + Title + '\t' +  VideoID;
-                        String line;
-                        StringBuffer dummy;
-
-                        //myTubeData.txt 파일 삭제 기능 구현(읽어오고, 쓰기에서 삭제해야)
-                        File file = new File(context.getFilesDir(), "myTubeData.txt");
-                        FileWriter fw = null;
-                        FileReader fr = null;
-                        BufferedWriter bufW = null;
-                        BufferedReader bufR = null;
-
-                        if(file.exists()){
-                            try{
-                                line = null;
-                                dummy = new StringBuffer();
-
-                                fr = new FileReader(file);
-                                bufR = new BufferedReader(fr);
-
-                                while((line = bufR.readLine()) != null){
-                                    if(temp.equals(line)){ continue; }
-                                    dummy.append(line);
-                                    dummy.append("\n");
-                                }
-
-                                //dummy 덮어쓰기
-                                try{
-                                    //fw = new FileWriter(file, true); //기존 Data 추가쓰기
-                                    fw = new FileWriter(file); //기존 Data 덮어쓰기
-                                    bufW = new BufferedWriter(fw);
-                                    bufW.append(dummy.toString()); //쓰고
-                                    bufW.flush(); //비운다
-                                }catch(Exception e){
-                                    e.printStackTrace();
-                                }
-
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-
-                            //file close 해주는 코드
-                            try {
-                                if (bufW != null) {
-                                    bufW.close();
-                                }
-                                if (bufR != null) {
-                                    bufR.close();
-                                }
-                                if (fw != null) {
-                                    fw.close();
-                                }
-                                if (fr != null) {
-                                    fr.close();
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
                         //Like 클릭시 하트 비워짐, 토스트메시지
                         like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_dark));
                         Toast.makeText(context, "보관함에서 삭제", Toast.LENGTH_SHORT).show();
+                        dbHelper.delete(VideoID);
 
-                        //해당 Fragment 다시 load, UI가 예쁘진 않다. 보완 필요.
+                        //해당 Fragment 다시 load
+                        //TODO 자연스러운 애니메이션으로 삭제하는 방법 있으면 추가하자
                         refresh();
                     }
                 }
             });
 
+            //썸네일, 제목 클릭 시 동영상 실행
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // 재생 횟수 증가
+                    dbHelper.update_played(VideoID);
+
+                    Intent intent = new Intent(getActivity(), PlayActivity.class);
+                    intent.putExtra("id", VideoID);
+                    startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동. 동영상 아이디를 넘겨줌.
+                }
+            });
             return v;
         }
     }

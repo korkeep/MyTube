@@ -60,17 +60,19 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    // 레코드 재생 횟수 추가 (FragmentStore)
-    public void update_p(String videoId) {
+    // 레코드 재생 횟수 추가 (StartActivity, FragmentStore)
+    public void update_played(String videoId) {
         // 읽고 쓰기가 가능하게 DB 열기
         SQLiteDatabase db = getWritableDatabase();
         String temp ="";
         // 현재 재생 횟수 가져오기
         Cursor cursor = db.rawQuery("SELECT PLAYED FROM VIDEO_DATA WHERE VIDEO_ID=?", new String[] {videoId});
         while (cursor.moveToNext()) {
-            temp = cursor.getString(0);
+            temp += cursor.getString(0);    //PLAYED
+            Log.v("Temp", temp);
         }
         int result = Integer.parseInt(temp) + 1;
+        Log.v("Result", Integer.toString(result));
 
         // 레코드 재생 횟수 추가
         db.execSQL("UPDATE VIDEO_DATA SET PLAYED=" + result + " WHERE VIDEO_ID='" + videoId + "';");
@@ -79,7 +81,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // 레코드 그룹 명 추가 (FragmentStore)
-    public void update_g(String videoId, String groupName) {
+    public void update_groupName(String videoId, String groupName) {
         // 읽고 쓰기가 가능하게 DB 열기
         SQLiteDatabase db = getWritableDatabase();
         String result = groupName;
@@ -121,7 +123,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     + cursor.getString(5)   //GROUP_NAME
                     + '\t'
                     + cursor.getInt(6)      //PLAYED
-                    + '\t';
+                    + '\n';
         }
         Log.v("Title", "제목 순서로 출력되었습니다.");
         return result;
@@ -149,7 +151,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     + cursor.getString(5)   //GROUP_NAME
                     + '\t'
                     + cursor.getInt(6)      //PLAYED
-                    + '\t';
+                    + '\n';
         }
         Log.v("PublishedAt", "동영상 날짜 순서로 출력되었습니다.");
         return result;
@@ -177,7 +179,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     + cursor.getString(5)   //GROUP_NAME
                     + '\t'
                     + cursor.getInt(6)      //PLAYED
-                    + '\t';
+                    + '\n';
         }
         Log.v("LikeAt", "좋아요 날짜 순서로 출력되었습니다.");
         return result;
@@ -206,9 +208,9 @@ public class DBHelper extends SQLiteOpenHelper {
                     + cursor.getString(5)   //GROUP_NAME
                     + '\t'
                     + cursor.getInt(6)      //PLAYED
-                    + '\t';
+                    + '\n';
         }
-        Log.v("Played", "Top N만큼 재생된 순서로 출력되었습니다.");
+        Log.v("Played", "Top N 만큼 재생된 순서로 출력되었습니다.");
         return result;
     }
 
@@ -234,7 +236,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     + cursor.getString(5)   //GROUP_NAME
                     + '\t'
                     + cursor.getInt(6)      //PLAYED
-                    + '\t';
+                    + '\n';
         }
         Log.v("Search", "키워드 검색 결과가 출력되었습니다.");
         return result;
@@ -262,7 +264,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     + cursor.getString(5)   //GROUP_NAME
                     + '\t'
                     + cursor.getInt(6)      //PLAYED
-                    + '\t';
+                    + '\n';
         }
         Log.v("Group", "그룹 결과가 출력되었습니다.");
         return result;

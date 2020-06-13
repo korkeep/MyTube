@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         switch(id){
             case android.R.id.home:
                 //뒤로가기 동작
-                //NavUtils.navigateUpFromSameTask(this);
+                finish();
                 return true;
             case R.id.go_home:
                 //홈으로 이동 동작

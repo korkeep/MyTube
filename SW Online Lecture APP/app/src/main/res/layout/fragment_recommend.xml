@@ -18,16 +18,22 @@
         android:layout_height="wrap_content"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView3"
+        <Spinner
+            android:id="@+id/recommendSpinner"
+            android:layout_gravity="left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="추천 화면"
-            android:textSize="50dp" />
+            android:layout_marginBottom="8dp" />
+
+        <ListView
+            android:layout_height="match_parent"
+            android:layout_width="fill_parent"
+            android:id="@+id/playlist">
+        </ListView>
 
     </LinearLayout>
+
 
 </ScrollView>

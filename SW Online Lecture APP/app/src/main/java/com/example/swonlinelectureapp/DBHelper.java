@@ -33,8 +33,8 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         // 레코드 추가, Primary Key를 VIDEO_ID로 두면서 중복 처리
         db.execSQL("INSERT INTO VIDEO_DATA VALUES('" +videoId+"', '"+title+"', '"+url+"', '"+publishedAt+"', '"+likeAt+"', null, 0);");
-        Log.v("Insert", "레코드가 추가되었습니다.");
-        Log.v("Result", getResult_title());
+        Log.i("[insert]", "레코드가 추가되었습니다.");
+        Log.i("[getResult_played]", getResult_played());
         db.close();
     }
 
@@ -48,14 +48,13 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT VIDEO_ID FROM VIDEO_DATA WHERE VIDEO_ID=?", new String[]{videoId});
         while (cursor.moveToNext()) {
             result += cursor.getString(0);   //VIDEO_ID
-            Log.v("Result", result);
         }
 
         if(videoId.equals(result)){
-            Log.v("Stored Item Detected", "이미 저장된 비디오입니다.");
+            Log.i("[getResult_videoId]", "저장된 비디오입니다.");
             return true;
         } else {
-            Log.v("No Stored Item", "이미 저장된 비디오가 없습니다.");
+            Log.i("[getResult_videoId]", "저장된 비디오가 아닙니다.");
             return false;
         }
     }
@@ -69,26 +68,13 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT PLAYED FROM VIDEO_DATA WHERE VIDEO_ID=?", new String[] {videoId});
         while (cursor.moveToNext()) {
             temp += cursor.getString(0);    //PLAYED
-            Log.v("Temp", temp);
         }
         int result = Integer.parseInt(temp) + 1;
-        Log.v("Result", Integer.toString(result));
 
         // 레코드 재생 횟수 추가
         db.execSQL("UPDATE VIDEO_DATA SET PLAYED=" + result + " WHERE VIDEO_ID='" + videoId + "';");
-        Log.v("Update Played", "재생 횟수가 증가되었습니다.");
-        db.close();
-    }
-
-    // 레코드 그룹 명 추가 (FragmentStore)
-    public void update_groupName(String videoId, String groupName) {
-        // 읽고 쓰기가 가능하게 DB 열기
-        SQLiteDatabase db = getWritableDatabase();
-        String result = groupName;
-
-        // 레코드 그룹명 추가
-        db.execSQL("UPDATE VIDEO_DATA SET GROUP_NAME=" + result + " WHERE VIDEO_ID='" + videoId + "';");
-        Log.v("Update Group", "그룹 이름이 추가되었습니다.");
+        Log.i("[update_played]", "재생 횟수가 증가했습니다.");
+        Log.i("[getResult_played]", getResult_played());
         db.close();
     }
 
@@ -97,8 +83,37 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         // 레코드 삭제
         db.execSQL("DELETE FROM VIDEO_DATA WHERE VIDEO_ID='" + videoId + "';");
-        Log.v("Delete", "레코드가 삭제되었습니다.");
+        Log.i("[delete]", "레코드가 삭제되었습니다.");
+        Log.i("[getResult_played]", getResult_played());
         db.close();
+    }
+
+    // 플레이 횟수 순으로 레코드 출력 (FragmentStore)
+    public String getResult_played() {
+        // 읽기가 가능하게 DB 열기
+        SQLiteDatabase db = getReadableDatabase();
+        String result = "";
+
+        // 레코드 가져오기 (VIDEO_ID, TITLE, URL, PUBLISHED_AT, LIKE_AT, GROUP_NAME, PLAYED)
+        Cursor cursor = db.rawQuery("SELECT * FROM VIDEO_DATA ORDER BY PLAYED DESC", null);
+        while (cursor.moveToNext()) {
+            result += cursor.getString(0)   //VIDEO_ID
+                    + '\t'
+                    + cursor.getString(1)   //TITLE
+                    + '\t'
+                    + cursor.getString(2)   //URL
+                    + '\t'
+                    + cursor.getString(3)   //PUBLISHED_AT
+                    + '\t'
+                    + cursor.getString(4)   //LIKE_AT
+                    + '\t'
+                    + cursor.getString(5)   //GROUP_NAME
+                    + '\t'
+                    + cursor.getInt(6)      //PLAYED
+                    + '\n';
+        }
+        Log.i("[getResult_played]", result);
+        return result;
     }
 
     // 제목 순으로 레코드 출력 (FragmentStore)
@@ -125,7 +140,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     + cursor.getInt(6)      //PLAYED
                     + '\n';
         }
-        Log.v("Title", "제목 순서로 출력되었습니다.");
+        Log.i("[getResult_title]", result);
         return result;
     }
 
@@ -153,7 +168,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     + cursor.getInt(6)      //PLAYED
                     + '\n';
         }
-        Log.v("PublishedAt", "동영상 날짜 순서로 출력되었습니다.");
+        Log.i("[getResult_publishedAt]", result);
         return result;
     }
 
@@ -181,40 +196,11 @@ public class DBHelper extends SQLiteOpenHelper {
                     + cursor.getInt(6)      //PLAYED
                     + '\n';
         }
-        Log.v("LikeAt", "좋아요 날짜 순서로 출력되었습니다.");
+        Log.i("[getResult_likeAt]", result);
         return result;
     }
 
-    // 플레이 횟수 Top 'N' 레코드 출력 (FragmentStore)
-    public String getResult_played(int top) {
-        // 읽기가 가능하게 DB 열기
-        SQLiteDatabase db = getReadableDatabase();
-        String result = "";
-        int n = 0;
-
-        // 레코드 가져오기 (VIDEO_ID, TITLE, URL, PUBLISHED_AT, LIKE_AT, GROUP_NAME, PLAYED)
-        Cursor cursor = db.rawQuery("SELECT * FROM VIDEO_DATA ORDER BY PLAYED ASC", null);
-        while (cursor.moveToNext() && n++<top) {
-            result += cursor.getString(0)   //VIDEO_ID
-                    + '\t'
-                    + cursor.getString(1)   //TITLE
-                    + '\t'
-                    + cursor.getString(2)   //URL
-                    + '\t'
-                    + cursor.getString(3)   //PUBLISHED_AT
-                    + '\t'
-                    + cursor.getString(4)   //LIKE_AT
-                    + '\t'
-                    + cursor.getString(5)   //GROUP_NAME
-                    + '\t'
-                    + cursor.getInt(6)      //PLAYED
-                    + '\n';
-        }
-        Log.v("Played", "Top N 만큼 재생된 순서로 출력되었습니다.");
-        return result;
-    }
-
-    // 키워드 검색 레코드 출력 (FragmentStore)
+    // 키워드 검색 레코드 출력 (FragmentRecommend)
     public String getResult_search(String search) {
         // 읽기가 가능하게 DB 열기
         SQLiteDatabase db = getReadableDatabase();
@@ -238,11 +224,21 @@ public class DBHelper extends SQLiteOpenHelper {
                     + cursor.getInt(6)      //PLAYED
                     + '\n';
         }
-        Log.v("Search", "키워드 검색 결과가 출력되었습니다.");
+        Log.i("[getResult_search]", result);
         return result;
     }
 
-    // 그룹 레코드 출력 (FragmentStore)
+    // 레코드 그룹 명 추가 (FragmentRecommend)
+    public void update_groupName(String videoId, String groupName) {
+        // 읽고 쓰기가 가능하게 DB 열기
+        SQLiteDatabase db = getWritableDatabase();
+        // 레코드 그룹명 추가
+        db.execSQL("UPDATE VIDEO_DATA SET GROUP_NAME=" + groupName + " WHERE VIDEO_ID='" + videoId + "';");
+        Log.i("[update_groupName]", "그룹 이름이 추가되었습니다.");
+        db.close();
+    }
+
+    // 그룹 레코드 출력 (FragmentRecommend)
     public String getResult_groupName(String groupName) {
         // 읽기가 가능하게 DB 열기
         SQLiteDatabase db = getReadableDatabase();
@@ -266,7 +262,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     + cursor.getInt(6)      //PLAYED
                     + '\n';
         }
-        Log.v("Group", "그룹 결과가 출력되었습니다.");
+        Log.i("[getResult_groupName]", result);
         return result;
     }
 }

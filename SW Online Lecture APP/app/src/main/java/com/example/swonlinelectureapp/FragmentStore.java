@@ -20,7 +20,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -30,6 +29,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,14 +51,15 @@ public class FragmentStore extends Fragment {
         playlist = (ListView)v.findViewById(R.id.playlist);
 
         //Spinner 관련
-        Spinner spinner = (Spinner)v.findViewById(R.id.storeOption);
-        //spinner.setSelection(0, true);
-        //View spinner_view = spinner.getSelectedView();
-        //((TextView)spinner_view).setTextColor(Color.WHITE);
+        final String[] data = getResources().getStringArray(R.array.storeList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item, data);
+        Spinner spinner = (Spinner) v.findViewById(R.id.storeSpinner);
+        spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @SuppressLint("ResourceAsColor")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                // 제목순에서 Fragment 전환할 때 어떻게 해결해야되는지 모르겠다.
                 if (((TextView) adapterView.getChildAt(0)) != null) {
                     Log.v("Spinner", String.valueOf(adapterView.getChildAt(0)));
                     ((TextView) adapterView.getChildAt(0)).setTextColor(Color.WHITE);
@@ -97,10 +98,21 @@ public class FragmentStore extends Fragment {
             String result = "";
             final DBHelper dbHelper = new DBHelper(getActivity(), "Video_Data.db", null, 1);
 
-            //제목 순, 날짜 순, 추가 순 정렬
-            if(select.equals("날짜순")) result = dbHelper.getResult_publishedAt();
-            else if(select.equals("추가순")) result = dbHelper.getResult_likeAt();
-            else result = dbHelper.getResult_title();
+            //시청 순, 제목 순, 날짜 순, 추가 순 정렬
+            switch (select) {
+                case "제목순":
+                    result = dbHelper.getResult_title();
+                    break;
+                case "날짜순":
+                    result = dbHelper.getResult_publishedAt();
+                    break;
+                case "추가순":
+                    result = dbHelper.getResult_likeAt();
+                    break;
+                default:
+                    result = dbHelper.getResult_played();
+                    break;
+            }
 
             //DB 읽어오기
             if(!result.equals("")){

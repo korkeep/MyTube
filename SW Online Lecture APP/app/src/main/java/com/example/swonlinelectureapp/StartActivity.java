@@ -7,11 +7,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +55,9 @@ public class StartActivity extends AppCompatActivity {
     ArrayList<SearchData> sdata = new ArrayList<SearchData>();
     //final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
     final String serverKey="AIzaSyAOUuKJ9HOxGT7pCqvsj5RMPbDE6k9gRo0";
+
+    //DB 관련
+    final DBHelper dbHelper = new DBHelper(StartActivity.this, "Video_Data.db", null, 1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,10 +204,6 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-
-    //만약 검색 결과에서, 보관함에 동일한 Video ID가 존재한다면?? 요때 Like 색깔 맞춰주기
-
-
     //파싱 결과로 LIstView 구성
     public class StoreListAdapter extends ArrayAdapter<SearchData> {
         private ArrayList<SearchData> items;
@@ -240,16 +244,6 @@ public class StartActivity extends AppCompatActivity {
             v.setTag(position);
             final String VideoID = items.get((Integer) v.getTag()).getVideoId();
 
-            //썸네일, 제목 클릭 시 동영상 실행
-            /*v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(StartActivity.this, PlayActivity.class);
-                    intent.putExtra("id", VideoID);
-                    startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동. 동영상 아이디를 넘겨줌.
-                }
-            });*/
-
             //제목 설정
             final String Title = fInfo.getTitle();
             ((TextView) v.findViewById(R.id.title)).setText(Title);
@@ -260,90 +254,59 @@ public class StartActivity extends AppCompatActivity {
 
             //Like 버튼
             final ToggleButton like = (ToggleButton) v.findViewById(R.id.like);
+
+            // DB에 레코드가 존재한다면 like를 채워진 하트 모양으로 전환
+            if(dbHelper.getResult_videoId(VideoID)){
+                like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_gray));
+            }
+
+            // like 버튼 클릭 시 Like 버튼 활성화
             like.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    // if 조건문에서 정확하게는 보관함 List Video ID와 비교해봐야
-                    if(like.isChecked()) {
+                    // DB에 레코드가 존재한다면 like를 체크 상태로 전환
+                    if(dbHelper.getResult_videoId(VideoID)) like.setChecked(true);
+                    else like.setChecked(false);
 
-                        //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 \t으로 구분하여 저장된다
-                        String temp = new_url + "\t" + Date + "\t" + Title + "\t" +  VideoID;
-
-                        File file = new File(getFilesDir(), "myTubeData.txt");
-                        FileWriter fw = null;
-                        BufferedWriter buf = null;
-
-                        //myTubeData.txt 에 동영상 정보 추가
-                        try{
-                            fw = new FileWriter(file, true); //기존 Data 추가쓰기
-                            //fw = new FileWriter(file); //기존 Data 덮어쓰기
-                            buf = new BufferedWriter(fw);
-                            buf.append(temp); //쓰고
-                            buf.newLine(); //end line
-                            buf.flush(); //비운다
-                        }catch(Exception e){
-                            e.printStackTrace();
-                        }
+                    // 보관함에 추가
+                    if(!like.isChecked()) {
+                        //VideoDate 설정
+                        @SuppressLint("SimpleDateFormat") SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        java.util.Date VideoDate = null;
                         try {
-                            if (buf != null) {
-                                buf.close();
-                            }
-                            if (fw != null) {
-                                fw.close();
-                            }
-                        } catch (Exception e) {
+                            VideoDate = new java.sql.Date(transFormat.parse(Date).getTime());
+                        } catch (ParseException e) {
                             e.printStackTrace();
                         }
+                        //LikeDate 설정
+                        long now = System.currentTimeMillis();
+                        java.sql.Date LikeDate = new Date(now);
+
+                        dbHelper.insert(VideoID, Title, new_url, VideoDate, LikeDate);
 
                         //Like 클릭시 하트 채워짐, 토스트메시지
                         like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_gray));
                         Toast.makeText(StartActivity.this, "보관함에 추가", Toast.LENGTH_SHORT).show();
                     }
+                    // 보관함에서 삭제
+                    else {
+                        dbHelper.delete(VideoID);
+
+                        //Like 클릭시 하트 비워짐, 토스트메시지
+                        like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_dark));
+                        Toast.makeText(StartActivity.this, "보관함에서 삭제", Toast.LENGTH_SHORT).show();
+                    }
+                    Log.v("좋아요 체크여부 확인", Boolean.toString(like.isChecked()));
                 }
             });
 
-            //썸네일, 제목 클릭 시 Like 버튼 활성화
+            //썸네일, 제목 클릭 시 동영상 실행
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    // '!' 이 조건절에 붙었음
-                    if(!like.isChecked()) {
-
-                        //썸네일 이미지 + 날짜 + 제목 + Video ID순으로 \t으로 구분하여 저장된다
-                        String temp = new_url + "\t" + Date + "\t" + Title + "\t" +  VideoID;
-
-                        File file = new File(getFilesDir(), "myTubeData.txt");
-                        FileWriter fw = null;
-                        BufferedWriter buf = null;
-
-                        //myTubeData.txt 에 동영상 정보 추가
-                        try{
-                            fw = new FileWriter(file, true); //기존 Data 추가쓰기
-                            //fw = new FileWriter(file); //기존 Data 덮어쓰기
-                            buf = new BufferedWriter(fw);
-                            buf.append(temp); //쓰고
-                            buf.newLine(); //end line
-                            buf.flush(); //비운다
-                        }catch(Exception e){
-                            e.printStackTrace();
-                        }
-                        try {
-                            if (buf != null) {
-                                buf.close();
-                            }
-                            if (fw != null) {
-                                fw.close();
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        //Like 클릭시 하트 채워짐, 토스트메시지
-                        like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_gray));
-                        Toast.makeText(StartActivity.this, "보관함에 추가", Toast.LENGTH_SHORT).show();
-                    }
+                    Intent intent = new Intent(StartActivity.this, PlayActivity.class);
+                    intent.putExtra("id", VideoID);
+                    startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동. 동영상 아이디를 넘겨줌.
                 }
             });
 

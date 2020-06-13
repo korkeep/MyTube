@@ -52,8 +52,8 @@ public class StartActivity extends AppCompatActivity {
 
     AsyncTask<?, ?, ?> searchTask;
     ArrayList<SearchData> sdata = new ArrayList<SearchData>();
-    final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
-    //final String serverKey="AIzaSyBdARQznrjtHIflil6qtPdPdjMy2MdFWTU";
+    //final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
+    final String serverKey="AIzaSyAOUuKJ9HOxGT7pCqvsj5RMPbDE6k9gRo0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

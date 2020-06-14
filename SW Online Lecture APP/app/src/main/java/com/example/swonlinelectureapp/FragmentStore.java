@@ -29,11 +29,10 @@ public class FragmentStore extends Fragment {
     private ListView playlist;
     private String select = "";
 
-    //검색 기능 구현에 필요한 Parameter
+    //리스트 출력에 필요한 Parameter
     static DrawableManager DM = new DrawableManager();
     ArrayList<SearchData> pdata = new ArrayList<SearchData>();
     AsyncTask<?, ?, ?> printTask;
-
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_store, container, false);
@@ -77,7 +76,7 @@ public class FragmentStore extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            pdata.clear();
+            pdata.clear();  //리스트 템플릿인 pdata 비워주기
 
             //DB 관련
             String getString = "";
@@ -124,7 +123,7 @@ public class FragmentStore extends Fragment {
 
     //현재 DB에 저장된 정보(썸네일, 날짜, 제목) 출력
     //화면 클릭하면 영상 재생(비디오 ID를 Intent로, PlayActivity에서 재생)
-    //Like 클릭하면 리스트 삭제, 위로 정렬기능
+    //Like 클릭하면 레코드 삭제
     public class StoreListAdapter extends ArrayAdapter<SearchData> {
         private ArrayList<SearchData> items;
         SearchData fInfo;
@@ -139,6 +138,7 @@ public class FragmentStore extends Fragment {
         }
 
         //ListView 출력함수
+        @SuppressLint({"ViewHolder", "InflateParams"})
         public View getView(int position, View convertView, ViewGroup parent) {
 
             View v = convertView;
@@ -191,7 +191,6 @@ public class FragmentStore extends Fragment {
                 public void onClick(View v) {
                     // 재생 횟수 증가
                     dbHelper.update_played(VideoID);
-
                     Intent intent = new Intent(getActivity(), PlayActivity.class);
                     intent.putExtra("id", VideoID);
                     startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동. 동영상 아이디를 넘겨줌.

@@ -4,14 +4,12 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Spinner;
-import android.widget.Toast;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //액션바 글자 없애고, 뒤로가기 생성
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //상단 액션바 프로젝트 명 없애고, 뒤로가기 아이콘 생성
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
 
         //중간 내용
@@ -39,37 +37,18 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(new ItemSelectedListener());
     }
 
-    //상단 부분
-    //로고 삽입
+    //상단 부분, 로고 삽입
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.top_bar, menu);
-        /* 검색기능 구현
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        searchView = (SearchView) searchItem.getActionView();
-        searchView.setQueryHint(getString(R.string.edittext_search_video));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            //검색어 입력시
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            //검색어 완료시
-            @Override
-            public boolean onQueryTextChange(String s) {
-                return false;
-            }
-        });*/
         return true;
     }
 
-    //뒤로가기메뉴, 홈으로 이동 동작
+    //뒤로가기, 홈으로 이동 동작
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
-        switch(id){
+        switch(id) {
             case android.R.id.home:
                 //뒤로가기 동작
                 finish();
@@ -89,8 +68,7 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-            switch(menuItem.getItemId())
-            {
+            switch(menuItem.getItemId()) {
                 case R.id.homeItem:
                     transaction.replace(R.id.frameLayout, fragmentHome).commitAllowingStateLoss();
                     break;

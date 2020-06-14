@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +27,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class FragmentRecommend extends Fragment {
     private Context context;
@@ -36,36 +35,32 @@ public class FragmentRecommend extends Fragment {
     private ListView playlist;
     private String select = "";
     private String keyword = "";
-    private Spinner spinner;
-    //private int index;
 
-    //검색 기능 구현에 필요한 Parameter
+    //리스트 출력에 필요한 Parameter
     static DrawableManager DM = new DrawableManager();
     ArrayList<SearchData> pdata = new ArrayList<SearchData>();
     AsyncTask<?, ?, ?> printTask;
 
-
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_recommend, container, false);
+        assert container != null;
         context = container.getContext();
         playlist = (ListView)v.findViewById(R.id.playlist);
-        spinner = (Spinner) v.findViewById(R.id.recommendSpinner);
+        Spinner spinner = (Spinner) v.findViewById(R.id.recommendSpinner);
 
         //Spinner 관련
         final String[] data = getResources().getStringArray(R.array.recommendList);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item, data);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(Objects.requireNonNull(getActivity()), R.layout.spinner_item, data);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @SuppressLint("ResourceAsColor")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i("[index]", String.valueOf(i));
                 select = (String) adapterView.getItemAtPosition(i);
                 printTask = new FragmentRecommend.printTask().execute();
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                refresh();
             }
         });
 
@@ -89,18 +84,12 @@ public class FragmentRecommend extends Fragment {
     //검색 기능 구현
     public void performSearch() {
         searchOption.clearFocus();
-        InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager in = (InputMethodManager) Objects.requireNonNull(getActivity()).getSystemService(Context.INPUT_METHOD_SERVICE);
         in.hideSoftInputFromWindow(searchOption.getWindowToken(), 0);
 
-        //EditText내에서 검색한 string 결과 검색
+        //EditText내에서 검색한 결과 키워드로 받기
         keyword = searchOption.getText().toString();
         printTask = new FragmentRecommend.printTask().execute();
-    }
-
-    //Fragment 업데이트
-    private void refresh(){
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.detach(this).attach(this).commit();
     }
 
     //출력 기능 구현
@@ -113,7 +102,7 @@ public class FragmentRecommend extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            pdata.clear();
+            pdata.clear();  //리스트 템플릿인 pdata 비워주기
 
             //DB 관련
             String getString  = "";
@@ -122,9 +111,8 @@ public class FragmentRecommend extends Fragment {
             //키워드 검색, 그룹 검색 정렬
             if (select.equals("그룹 검색"))
                 getString = dbHelper.getResult_groupName(keyword);
-            else {
+            else
                 getString = dbHelper.getResult_search(keyword);
-            }
 
             //DB 읽어오기
             if(!getString.equals("")){
@@ -151,7 +139,7 @@ public class FragmentRecommend extends Fragment {
 
     //현재 DB에 저장된 정보(썸네일, 날짜, 제목) 출력
     //화면 클릭하면 영상 재생(비디오 ID를 Intent로, PlayActivity에서 재생)
-    //Check 클릭하면 그룹 추가 + 삭제
+    //Check 클릭하면 GROUP_NAME 추가 or 삭제
     public class StoreListAdapter extends ArrayAdapter<SearchData> {
         private ArrayList<SearchData> items;
         SearchData fInfo;
@@ -166,6 +154,7 @@ public class FragmentRecommend extends Fragment {
         }
 
         //ListView 출력함수
+        @SuppressLint({"ViewHolder", "InflateParams"})
         public View getView(int position, View convertView, ViewGroup parent) {
 
             View v = convertView;
@@ -192,13 +181,14 @@ public class FragmentRecommend extends Fragment {
             //Check 버튼 클릭 시 check 버튼 비활성화
             final ToggleButton check = (ToggleButton) v.findViewById(R.id.like);
 
-            // DB에 GROUP_NAME이 NULL이 아니라면 check를 채워진 체크 모양으로 전환
+            //DB에 GROUP_NAME의 유무에 따라 색깔 설정
             if(dbHelper.getResult_groupNotNULL(VideoID, keyword)){
                 check.setBackgroundDrawable(getResources().getDrawable(R.drawable.check_gray));
             } else{
                 check.setBackgroundDrawable(getResources().getDrawable(R.drawable.check_dark));
             }
 
+            //Check 버튼 클릭 이벤트 처리
             check.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -238,9 +228,6 @@ public class FragmentRecommend extends Fragment {
                         Toast.makeText(context, "그룹에서 삭제", Toast.LENGTH_SHORT).show();
                         dbHelper.delete_groupName(VideoID);
                     }
-                    //해당 Fragment 다시 load
-                    //TODO 자연스러운 애니메이션으로 삭제하는 방법 있으면 추가하자
-                    refresh();
                 }
             });
 

@@ -1,12 +1,8 @@
 package com.example.swonlinelectureapp;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
@@ -19,8 +15,8 @@ public class PlayActivity extends YouTubeBaseActivity implements YouTubePlayer.O
 
     private YouTubePlayerView ytpv;
     private YouTubePlayer ytp;
-    //final String serverKey="AIzaSyAOUuKJ9HOxGT7pCqvsj5RMPbDE6k9gRo0";
-    final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
+    final String serverKey="AIzaSyAOUuKJ9HOxGT7pCqvsj5RMPbDE6k9gRo0";
+    //final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +38,7 @@ public class PlayActivity extends YouTubeBaseActivity implements YouTubePlayer.O
         ytp.loadVideo(gt.getStringExtra("id"));
     }
 
-    //뒤로가기 버튼 눌렀을 때
+    //뒤로가기 눌렀을 때
     @Override
     public void onBackPressed() {
         Toast.makeText(this, "이전 화면으로 이동합니다", Toast.LENGTH_SHORT).show();

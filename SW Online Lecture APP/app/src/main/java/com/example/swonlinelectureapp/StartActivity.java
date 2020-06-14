@@ -1,8 +1,5 @@
 package com.example.swonlinelectureapp;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -11,12 +8,11 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,13 +44,13 @@ public class StartActivity extends AppCompatActivity {
 
     //썸네일에 필요한 Parameter
     static DrawableManager DM = new DrawableManager();
-    // String은 공백을 끝으로 인식하기 때문에 다른 대안 필요하다
+    //String은 공백을 끝으로 인식하기 때문에 다른 대안 필요하다
     String search_item;
 
     AsyncTask<?, ?, ?> searchTask;
     ArrayList<SearchData> sdata = new ArrayList<SearchData>();
-    final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
-    //final String serverKey="AIzaSyAOUuKJ9HOxGT7pCqvsj5RMPbDE6k9gRo0";
+    //final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
+    final String serverKey="AIzaSyAOUuKJ9HOxGT7pCqvsj5RMPbDE6k9gRo0";
 
     //DB 관련
     final DBHelper dbHelper = new DBHelper(StartActivity.this, "Video_Data.db", null, 1);
@@ -65,7 +61,7 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
 
         //액션바 글자 없애고, 뒤로가기 생성
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
 
         //Home에서 넘겨받은 String
@@ -103,11 +99,9 @@ public class StartActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                //뒤로가기 동작
-                finish();
-                return true;
+        if (id == android.R.id.home) {
+            finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -125,7 +119,6 @@ public class StartActivity extends AppCompatActivity {
             try {
                 paringJsonData(getUtube());
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             return null;
@@ -147,6 +140,7 @@ public class StartActivity extends AppCompatActivity {
                 "https://www.googleapis.com/youtube/v3/search?"
                         + "part=snippet&maxResults=10&q=" + search_item
                         + "&key="+ serverKey);
+
         // part(snippet),  q(검색값) , key(서버키)
         HttpClient client = new DefaultHttpClient();
         HttpResponse response;
@@ -160,10 +154,8 @@ public class StartActivity extends AppCompatActivity {
             while ((b = stream.read()) != -1) {
                 stringBuilder.append((char) b);
             }
-        } catch (ClientProtocolException e) {
-            //예외처리
         } catch (IOException e) {
-            //예외처리
+            e.printStackTrace();
         }
 
         //JSon 형식의 Youtube API 파일 읽어오기
@@ -171,7 +163,6 @@ public class StartActivity extends AppCompatActivity {
         try {
             jsonObject = new JSONObject(stringBuilder.toString());
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -192,7 +183,6 @@ public class StartActivity extends AppCompatActivity {
             try {
                 changeString = new String(title.getBytes("8859_1"), "utf-8");
             } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             String imgUrl = c.getJSONObject("snippet").getJSONObject("thumbnails")
@@ -216,9 +206,9 @@ public class StartActivity extends AppCompatActivity {
         }
 
         //ListView 출력함수
+        @SuppressLint("ViewHolder")
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            //convertView가 맞나??
             View v = convertView;
             fInfo = items.get(position);
             LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -234,7 +224,6 @@ public class StartActivity extends AppCompatActivity {
             try {
                 eUrl = URLEncoder.encode(eUrl, "EUC-KR").replace("+", "%20");
             } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             final String new_url = sUrl + eUrl;
@@ -255,7 +244,7 @@ public class StartActivity extends AppCompatActivity {
             //Like 버튼
             final ToggleButton like = (ToggleButton) v.findViewById(R.id.like);
 
-            // DB에 레코드가 존재한다면 like를 채워진 하트 모양으로 전환
+            // DB에 레코드가 존재한다면 채워진 하트 모양으로 전환
             if(dbHelper.getResult_videoId(VideoID)){
                 like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_gray));
             }
@@ -296,7 +285,6 @@ public class StartActivity extends AppCompatActivity {
                         like.setBackgroundDrawable(getResources().getDrawable(R.drawable.like_dark));
                         Toast.makeText(StartActivity.this, "보관함에서 삭제", Toast.LENGTH_SHORT).show();
                     }
-                    Log.v("좋아요 체크여부 확인", Boolean.toString(like.isChecked()));
                 }
             });
 
@@ -338,7 +326,6 @@ public class StartActivity extends AppCompatActivity {
                     startActivity(intent); //리스트 터치시 재생하는 엑티비티로 이동. 동영상 아이디를 넘겨줌.
                 }
             });
-
             return v;
         }
     }

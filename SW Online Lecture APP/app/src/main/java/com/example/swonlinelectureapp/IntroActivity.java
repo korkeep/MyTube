@@ -16,7 +16,7 @@ public class IntroActivity extends Activity{
             e.printStackTrace();
         }
 
-        // next Activity 기재.
+        //다음 Activity
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
         finish();

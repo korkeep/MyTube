@@ -20,8 +20,9 @@ public class FragmentHome extends Fragment {
     private EditText searchBar;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        //검색 기능
         View v = inflater.inflate(R.layout.fragment_home, container, false);
+
+        //검색 기능
         searchBar = v.findViewById(R.id.search_bar);
         searchBar.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -34,6 +35,7 @@ public class FragmentHome extends Fragment {
                 return false;
             }
         });
+
         return v;
     }
 
@@ -43,11 +45,12 @@ public class FragmentHome extends Fragment {
         InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         in.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
 
-        //EditText내에서 검색한 string 결과 Intent로 전달
+        //EditText에서 검색한 결과 Intent로 전달
         String temp = searchBar.getText().toString();
         Intent intent = new Intent(getActivity().getApplicationContext(), StartActivity.class);
         intent.putExtra("search_item", temp);
         searchBar.setText("");
+
         startActivity(intent);
     }
 }

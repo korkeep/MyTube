@@ -37,6 +37,7 @@ public class FragmentRecommend extends Fragment {
     private String select = "";
     private String keyword = "";
     private Spinner spinner;
+    //private int index;
 
     //검색 기능 구현에 필요한 Parameter
     static DrawableManager DM = new DrawableManager();
@@ -58,6 +59,7 @@ public class FragmentRecommend extends Fragment {
             @SuppressLint("ResourceAsColor")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.i("[index]", String.valueOf(i));
                 select = (String) adapterView.getItemAtPosition(i);
                 printTask = new FragmentRecommend.printTask().execute();
             }
@@ -92,23 +94,7 @@ public class FragmentRecommend extends Fragment {
 
         //EditText내에서 검색한 string 결과 검색
         keyword = searchOption.getText().toString();
-
-        //Spinner 관련
-        final String[] data = getResources().getStringArray(R.array.recommendList);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item, data);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @SuppressLint("ResourceAsColor")
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                select = (String) adapterView.getItemAtPosition(i);
-                printTask = new FragmentRecommend.printTask().execute();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                refresh();
-            }
-        });
+        printTask = new FragmentRecommend.printTask().execute();
     }
 
     //Fragment 업데이트
@@ -137,10 +123,8 @@ public class FragmentRecommend extends Fragment {
             if (select.equals("그룹 검색"))
                 getString = dbHelper.getResult_groupName(keyword);
             else {
-                Log.i("[Test1]", keyword);
                 getString = dbHelper.getResult_search(keyword);
             }
-            Log.i("[Test2]", getString);
 
             //DB 읽어오기
             if(!getString.equals("")){
@@ -153,8 +137,7 @@ public class FragmentRecommend extends Fragment {
                     temp = new SearchData(subStr[0], subStr[1], subStr[2], subStr[3]);
                     pdata.add(temp);
                 }
-            } else
-                Log.i("[Test Error]", "line 163");
+            }
             return null;
         }
 

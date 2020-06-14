@@ -16,16 +16,36 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
         android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:orientation="vertical">
+        android:focusableInTouchMode="true">
 
-        <Spinner
-            android:id="@+id/recommendSpinner"
-            android:layout_gravity="left"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp" />
+            android:orientation="horizontal">
+            <Spinner
+                android:id="@+id/recommendSpinner"
+                android:layout_gravity="left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp" />
+            <EditText
+                android:id="@+id/search_option"
+                android:layout_gravity="right"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorAccent"
+                android:background="@color/colorPrimary"
+                android:textSize="16sp"
+                android:padding="10dip"
+                android:maxLines="1"
+                android:hint="@string/prompt_input"
+                android:textColorHint="@color/colorItem"
+                android:imeOptions="actionSearch"
+                android:inputType="text" />
+        </LinearLayout>
 
         <ListView
             android:layout_height="match_parent"

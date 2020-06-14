@@ -3,14 +3,12 @@ package com.example.swonlinelectureapp;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,11 +49,6 @@ public class FragmentStore extends Fragment {
             @SuppressLint("ResourceAsColor")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                // 제목순에서 Fragment 전환할 때 어떻게 해결해야되는지 모르겠다.
-                if (((TextView) adapterView.getChildAt(0)) != null) {
-                    Log.v("Spinner", String.valueOf(adapterView.getChildAt(0)));
-                    ((TextView) adapterView.getChildAt(0)).setTextColor(Color.WHITE);
-                }
                 select = (String) adapterView.getItemAtPosition(i);
                 printTask = new printTask().execute();
             }
@@ -87,35 +80,34 @@ public class FragmentStore extends Fragment {
             pdata.clear();
 
             //DB 관련
-            String result = "";
+            String getString = "";
             final DBHelper dbHelper = new DBHelper(getActivity(), "Video_Data.db", null, 1);
 
             //시청 순, 제목 순, 날짜 순, 추가 순 정렬
             switch (select) {
                 case "제목순":
-                    result = dbHelper.getResult_title();
+                    getString = dbHelper.getResult_title();
                     break;
                 case "날짜순":
-                    result = dbHelper.getResult_publishedAt();
+                    getString = dbHelper.getResult_publishedAt();
                     break;
                 case "추가순":
-                    result = dbHelper.getResult_likeAt();
+                    getString = dbHelper.getResult_likeAt();
                     break;
                 default:
-                    result = dbHelper.getResult_played();
+                    getString = dbHelper.getResult_played();
                     break;
             }
 
             //DB 읽어오기
-            if(!result.equals("")){
-                String[] line = result.split("\n");
+            if(!getString.equals("")){
+                String[] line = getString.split("\n");
                 String[] subStr;
                 SearchData temp;
 
                 for(int i=0; i<line.length;i++) {
                     subStr = line[i].split("\t");
-                    temp = new SearchData(subStr[0], subStr[1], subStr[2], subStr[3]);
-                    Log.v("View Temp", subStr[0] + ' ' + subStr[1] + ' ' + subStr[2] + ' ' + subStr[3]);
+                    temp = new SearchData(subStr[0], subStr[1], subStr[2], subStr[3]);;
                     pdata.add(temp);
                 }
             }

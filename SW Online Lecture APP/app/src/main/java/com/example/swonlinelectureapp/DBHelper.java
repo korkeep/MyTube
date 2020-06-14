@@ -1,5 +1,6 @@
 package com.example.swonlinelectureapp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.Date;
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -207,7 +209,9 @@ public class DBHelper extends SQLiteOpenHelper {
         String result = "";
 
         // 레코드 가져오기 (VIDEO_ID, TITLE, URL, PUBLISHED_AT, LIKE_AT, GROUP_NAME, PLAYED)
-        Cursor cursor = db.rawQuery("SELECT * FROM VIDEO_DATA WHERE TITLE='*'+?+'*'", new String[] {search});
+        String mQuery = "SELECT * FROM VIDEO_DATA WHERE TITLE LIKE '%"+search+"%'";
+        Cursor cursor = db.rawQuery(mQuery, null);
+
         while (cursor.moveToNext()) {
             result += cursor.getString(0)   //VIDEO_ID
                     + '\t'
@@ -228,17 +232,48 @@ public class DBHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    // 레코드 그룹 명 추가 (FragmentRecommend)
+    // 그룹명이 NULL이면 false NULL이 아니면 true
+    public boolean getResult_groupNotNULL(String VideoId, String groupName) {
+        // 읽기가 가능하게 DB 열기
+        SQLiteDatabase db = getReadableDatabase();
+        String result = "";
+
+        // 레코드 가져오기 (VIDEO_ID, TITLE, URL, PUBLISHED_AT, LIKE_AT, GROUP_NAME, PLAYED)
+        Cursor cursor = db.rawQuery("SELECT GROUP_NAME FROM VIDEO_DATA WHERE VIDEO_ID=?", new String[] {VideoId});
+        while (cursor.moveToNext()) {
+            result += cursor.getString(0);    //GROUP_NAME
+        }
+        if (!result.equals("null")) {
+            Log.i("[getResult_groupNotNull]", result);
+            return true;
+        }
+        Log.i("[getResult_groupNotNull]", "NULL");
+        return false;
+    }
+
+    // 그룹 명 추가 (FragmentRecommend)
     public void update_groupName(String videoId, String groupName) {
         // 읽고 쓰기가 가능하게 DB 열기
         SQLiteDatabase db = getWritableDatabase();
         // 레코드 그룹명 추가
-        db.execSQL("UPDATE VIDEO_DATA SET GROUP_NAME=" + groupName + " WHERE VIDEO_ID='" + videoId + "';");
+        db.execSQL("UPDATE VIDEO_DATA SET GROUP_NAME='" + groupName + "' WHERE VIDEO_ID='" + videoId + "';");
         Log.i("[update_groupName]", "그룹 이름이 추가되었습니다.");
+        Log.i("[getResult_played]", getResult_played());
         db.close();
     }
 
-    // 그룹 레코드 출력 (FragmentRecommend)
+    // 그룹 명 삭제 (FragmentRecommend)
+    public void delete_groupName(String videoId) {
+        // 읽고 쓰기가 가능하게 DB 열기
+        SQLiteDatabase db = getWritableDatabase();
+        // 그룹 명 삭제
+        db.execSQL("UPDATE VIDEO_DATA SET GROUP_NAME='" + null + "' WHERE VIDEO_ID='" + videoId + "';");
+        Log.i("[delete_groupName]", "그룹 이름이 삭제되었습니다.");
+        Log.i("[getResult_played]", getResult_played());
+        db.close();
+    }
+
+    // 그룹 출력 (FragmentRecommend)
     public String getResult_groupName(String groupName) {
         // 읽기가 가능하게 DB 열기
         SQLiteDatabase db = getReadableDatabase();

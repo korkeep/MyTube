@@ -16,7 +16,8 @@ public class PlayActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     private YouTubePlayerView ytpv;
     private YouTubePlayer ytp;
     //final String serverKey="AIzaSyAOUuKJ9HOxGT7pCqvsj5RMPbDE6k9gRo0";
-    final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
+    //final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
+    final String serverKey="AIzaSyATs2ZNj6pfTXJ2vesRJDwsh6KDojC9zeY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

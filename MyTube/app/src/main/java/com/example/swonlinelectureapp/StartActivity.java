@@ -48,9 +48,7 @@ public class StartActivity extends AppCompatActivity {
 
     AsyncTask<?, ?, ?> searchTask;
     ArrayList<SearchData> sdata = new ArrayList<SearchData>();
-    //final String serverKey="AIzaSyAOUuKJ9HOxGT7pCqvsj5RMPbDE6k9gRo0";
-    //final String serverKey="AIzaSyBg-eEaLFpQN1scxt5HWA1vADzTKyKE6B0";
-    final String serverKey="AIzaSyATs2ZNj6pfTXJ2vesRJDwsh6KDojC9zeY";
+    final String serverKey="<Your Server Key>";
 
     //DB 관련
     final DBHelper dbHelper = new DBHelper(StartActivity.this, "Video_Data.db", null, 1);

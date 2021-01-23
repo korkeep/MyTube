@@ -27,7 +27,7 @@ Parsing Youtube Data & Save at Android Device Using SQLite
 | SEARCH | 검색 기능에서 임시로 저장되는 키워드 |
 | PLAYED | 동영상이 재생된 횟수를 누적한 값 |
 
-## UI 설계 및 응용프로그램 설명
+## UI 설계
 - 검색 화면  
 ![전체](https://user-images.githubusercontent.com/20378368/105571797-4dff8100-5d96-11eb-8f0d-63d31bd256ba.PNG)
 - 동영상 재생 화면  

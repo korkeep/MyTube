@@ -4,7 +4,7 @@ Parsing Youtube Data & Save at Android Device Using SQLite
 ## 설계 배경
 동영상(.mp4, .avi) 재생 환경을 제공해주는 플랫폼을 Android Application으로 구현
 
-## 설계 구현할 범위
+## 설계 범위
 - SQLite를 활용해 내장 메모리에 동영상 데이터베이스를 구축
 - 릴레이션 구성은 **①썸네일 URL**, **②업로드 날짜**, **③제목**, **④동영상 ID**, **⑤좋아요 클릭 시간**으로 구성
 

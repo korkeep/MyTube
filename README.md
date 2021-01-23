@@ -28,11 +28,11 @@ Parsing Youtube Data & Save at Android Device Using SQLite
 | PLAYED | 동영상이 재생된 횟수를 누적한 값 |
 
 ## UI 설계 및 응용프로그램 설명
-- 검색 화면
+- 검색 화면  
 ![전체](https://user-images.githubusercontent.com/20378368/105571797-4dff8100-5d96-11eb-8f0d-63d31bd256ba.PNG)
-- 동영상 재생 화면
+- 동영상 재생 화면  
 ![재생](https://user-images.githubusercontent.com/20378368/105571802-64a5d800-5d96-11eb-8361-a2924aee90d9.PNG)
-- 보관함 화면
+- 보관함 화면  
 ![보관함](https://user-images.githubusercontent.com/20378368/105571804-67083200-5d96-11eb-96f4-f51b64e72537.PNG)
-- 옵션 화면
+- 옵션 화면  
 ![옵션](https://user-images.githubusercontent.com/20378368/105571805-68395f00-5d96-11eb-8945-5e32daf9a2fc.PNG)

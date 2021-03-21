@@ -1,5 +1,5 @@
 # MyTube
-Parsing Youtube Data & Save at Android Device Using SQLite
+Parse & Save Youtube API data at Smart-Phone using SQLite 📱📹  
 
 ## 설계 배경
 동영상(.mp4, .avi) 재생 환경을 제공해주는 플랫폼을 Android Application으로 구현
